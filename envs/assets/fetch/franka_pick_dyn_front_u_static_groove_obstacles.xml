@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--franka_pick_dyn_front_u_static_groove_obstacles-->
+
+<mujoco>
+    <compiler angle="radian" coordinate="local" meshdir="" texturedir="../textures"></compiler>
+    <option timestep="0.002">
+        <flag warmstart="enable"></flag>
+    </option>
+
+    <size nuser_actuator="5"/>
+
+<!--    2. 载入共享资源：Franka 机器人-->
+    <include file="franka_shared.xml"></include>
+
+<!--3. <worldbody>：主要的世界场景内容-->
+    <worldbody>
+<!--        3.1 地面-->
+        <geom name="floor0" size="0 0 0.05" type="plane" material="groundplane"/>
+        <body name="floor0" pos="0.8 0.75 0">
+            <site name="target0" pos="0 0 0.5" size="0.02 0.02 0.02" rgba="1 0 0 1" type="sphere"></site>
+        </body>
+
+<!--        3.2 外部摄像机-->
+<!--        分别定义了两个具有摄像机的 body（MuJoCo 中可以把摄像机加在一个 body 上，用 body 的位置和摄像机自身的 orientation 来放置）。-->
+<!--        pos="3.5 0.75 1.6" 等是摄像机所在位置。-->
+<!--        euler="0 1.1 1.57" 等则是摄像机的欧拉角定义，表示它的朝向。-->
+<!--        fovy="43.3"：摄像机镜头的视野角度（Field of View, 以度数计）。-->
+<!--        name="ex_camera_1" 等：摄像机命名，方便在渲染时选择不同的 camera 视角。-->
+        <body name="external_camera_1" pos="3.5 0.75 1.6">
+            <camera euler="0 1.1 1.57" fovy="43.3" name="ex_camera_1" pos="0 0 0"></camera>
+        </body>
+        <body name="external_camera_2" pos="2.5 0.75 0.6">
+            <camera euler="0 1.57 1.57" fovy="43.3" name="ex_camera_2" pos="0 0 0"></camera>
+        </body>
+
+<!--        3.3 机器手和桌子-->
+<!--        panda_table：这是一个包含桌子的 body。-->
+<!--        pos="0.5 0.75 0.22"：桌子在世界坐标系中的放置位置（中心或参考点）。-->
+<!--        里面的 <geom>:-->
+<!--        size="0.4 0.35 0.22" type="box"：相当于一个长方体。MuJoCo 的 size 往往是半边长，所以实际桌面大小在 x 方向是 0.8 米、y 方向 0.7 米、高度 0.44 米（需确认具体坐标方向）。-->
+<!--        mass="3000"：给一个很大的质量（3000kg），目的是让桌子在仿真中近似固定不动。-->
+<!--        material="table_mat"：材质。-->
+<!--        body name="panda_base" pos="0.3 0 0.22"：在桌子上，再放置一个子 body，位置略微 offset。-->
+<!--        <include file="franka_robot.xml"/>：这里是实际的 Franka Panda 机器人定义，包括关节、连杆等。-->
+        <body name="panda_table" pos="0.5 0.75 0.22">
+            <geom size="0.4 0.35 0.22" pos="0.05 0 0" type="box" mass="3000" material="table_mat"/>
+            <body name="panda_base" pos="0.3 0 0.22">
+                <include file="franka_robot.xml"></include>
+            </body>
+        </body>
+
+<!--       3.4 Mocap 用的 body -->
+<!--        mocap="true"：这是一个“motion capture” body，通常用作外部输入控制时，MuJoCo 提供“mocap body”可以实时更新其位置和朝向，以驱动其他关节或者进行一些定位操作。-->
+<!--        这里放了好几个小的几何体（box），主要是为了可视化这个 mocap body 在仿真中的位置、或用于辅助观测（rgba="0 0.5 0 0.1" 带有半透明）。-->
+<!--        conaffinity="0" contype="0" 表示这些几何体不会与仿真中的其他对象产生碰撞。-->
+        <body mocap="true" name="panda0:mocap" pos="0 0 0" euler="3.14159 1.5708 0">
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.7" size="0.005 0.005 0.005" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="1 0.005 0.005" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 1 0.001" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 0.005 1" type="box"></geom>
+        </body>
+
+<!--        3.5 第二张桌子 (table0) 与相关的 site-->
+        <body pos="1.3 0.75 0.2" name="table0">
+<!--        <body pos="1.23 0.75 0.2" name="table0">-->
+            <geom size="0.25 0.55 0.2" type="box" mass="2000" material="table_mat"></geom>
+            <site name="target_center" pos="0 -0.38 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_center" pos="0 0.39 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_1" pos="-1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_2" pos="-1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_3" pos="-0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_4" pos="0 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="mark1" pos="0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark2" pos="1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark3" pos="1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark4" pos="-1.875 -0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark5" pos="0 0.25 0.2" size="0.04 0.04 0.04" rgba="1 0 1 0.1" type="sphere"></site>
+            <site name="safe2:site" pos="0 0.25 0.2" size="0.15 0.078 0.035" rgba="1 0 0 0" type="box"></site>
+        </body>
+
+<!--        3.6 其它辅助 body-->
+<!--        叫做 “space0” 的 body，上面加了一个名为 "spacesite" 的 site，用来可视化一个半透明的蓝色 box。看起来是一个额外的辅助空间标记。-->
+        <body pos="1.3 0.75 0.6" name="space0">
+            <site name="spacesite" size="0.25 0.55 0.2" rgba="0 0 1 0.05" type="box"></site>
+        </body>
+
+<!--        <body pos="1.23 0.75 0.6" name="space0">-->
+<!--            <site name="spacesite" size="0.25 0.55 0.2" rgba="0 0 1 0.05" type="box"></site>-->
+<!--        </body>-->
+
+<!--3.7 两个障碍物“罩子” site-->
+        <!-- 蓝色小方块障碍物的 罩子-->
+        <!-- 可以理解为滑动的轨道-->
+        <body pos="1.3 0.60 0.435" name="obstacle:site">
+            <site name="obstacle:site" size="0.25 0.03 0.035" rgba="1 0 0 0.05" type="box"></site>
+        </body>
+<!--        <body pos="1.23 0.60 0.435" name="obstacle:site">-->
+<!--            <site name="obstacle:site" size="0.25 0.03 0.035" rgba="1 0 0 0.05" type="box"></site>-->
+<!--        </body>-->
+
+<!--        <body pos="1.3 0.80 0.435" name="obstacle2:site">-->
+<!--            <site name="obstacle2:site" size="0.25 0.03 0.035" rgba="1 0 0 0.05" type="box"></site>-->
+<!--        </body>-->
+
+
+        <!-- the 浅绿色的那一个障碍物的罩子-->
+        <body pos="1.3 0.80 0.435" name="obstacle2:site">
+            <site name="obstacle2:site" size="0.25 0.10 0.035" rgba="1 0 0 0.05" type="box"></site>
+        </body>
+
+<!--        <body pos="1.23 0.80 0.435" name="obstacle2:site">-->
+<!--            <site name="obstacle2:site" size="0.25 0.09 0.035" rgba="1 0 0 0.05" type="box"></site>-->
+<!--        </body>-->
+
+        <body pos="1.3 0.80 0.435" name="safe2:body">
+<!--        <body pos="1.23 0.80 0.435" name="safe2:body">-->
+
+        </body>
+
+<!--        3.8 运动的障碍物本体-->
+        <!-- 蓝色的小方块 -->
+<!--        这是实际能与其他物体碰撞的障碍几何体 (geom)，大小是 0.03 0.03 0.03，一个蓝色小方块 (rgba="0 0 1 1")，质量=2000。-->
+<!--        这里定义了一个 slide 型关节：-->
+<!--        axis="1 0 0"：只能在 x 方向进行移动。-->
+<!--        range="-.25 .25"：可在 -0.25 到 0.25 的范围内滑动。-->
+<!--        damping="0.01"：小阻尼。-->
+<!--        通过这个关节，可以在仿真中实时控制该障碍物在 x 方向移动。-->
+        <body pos="1.3 0.60 0.435" name="obstacle">
+            <!--limited="true" range="-.05 .05"  damping='0.01' armature='0' frictionloss='0.1'-->
+            <geom name="obstacle:geom" pos="0 0 0" size="0.03 0.03 0.03" type="box" rgba="0 0 1 1" mass="2000"
+                  material="table_mat"></geom>
+            <joint name="obstacle:joint" type="slide" axis="1 0 0" limited="true" damping="0.01" range="-.25 .25"
+                   margin="0.03"></joint>
+        </body>
+
+
+<!--        <body pos="1.23 0.60 0.435" name="obstacle">-->
+<!--            &lt;!&ndash;limited="true" range="-.05 .05"  damping='0.01' armature='0' frictionloss='0.1'&ndash;&gt;-->
+<!--            <geom name="obstacle:geom" pos="0 0 0" size="0.03 0.03 0.03" type="box" rgba="0 0 1 1" mass="2000"-->
+<!--                  material="table_mat"></geom>-->
+<!--            <joint name="obstacle:joint" type="slide" axis="1 0 0" limited="true" damping="0.01" range="-.25 .25"-->
+<!--                   margin="0.03"></joint>-->
+<!--        </body>-->
+
+
+
+<!--3.9 另一个障碍物 - “U 形槽” 结构-->
+        <!-- ************* 新的 U 形槽障碍物 ************* -->
+        <!-- 和原先 "obstacle2" 相同的位置与关节，只是换成三块 box 组成 "U" 形。 -->
+        <body pos="1.3 0.80 0.435" name="obstacle2">
+<!--        <body pos="1.23 0.80 0.435" name="obstacle2">-->
+            <!-- ********** 以下三块几何体构成一个U形 ********** -->
+
+            <!-- ********** 左侧竖板 ********** -->
+            <!--  size="0.01 0.10 0.03" 表示：
+                 x方向半宽=0.01, y方向半宽=0.10, z方向半宽=0.03。
+                 这样它在 y方向 上比较“长”，z方向 厚度约 0.06。-->
+            <!--  pos="-0.10 0 0" 表示往 x负方向移 0.10，使得形成左侧边。 -->
+            <geom
+                name="obstacle2:geom_u_left"
+                type="box"
+                pos="-0.10 0 0"
+                euler="0 0 0"
+                size="0.01 0.10 0.03"
+                rgba="0 1 1 1"
+                mass="1000"
+                material="table_mat"
+            />
+
+            <!-- ********** 右侧竖板 ********** -->
+            <geom
+                name="obstacle2:geom_u_right"
+                type="box"
+                pos="0.10 0 0"
+                euler="0 0 0"
+                size="0.01 0.10 0.03"
+                rgba="0 1 1 1"
+                mass="1000"
+                material="table_mat"
+            />
+
+            <!-- ********** 底部横板 ********** -->
+            <!--  pos="0 -0.10 0" 表示在 y方向 往负方向移 0.10，使得它和左右竖板连接成 "U" 形。-->
+            <!--  size="0.10 0.01 0.03" 使其在 x方向 稍长一些（0.20的总宽）， y方向 厚度仅 0.02。-->
+            <geom
+                name="obstacle2:geom_u_bottom"
+                type="box"
+                pos="0 -0.10 0"
+                euler="0 0 0"
+                size="0.10 0.01 0.03"
+                rgba="0 1 1 1"
+                mass="1000"
+                material="table_mat"
+            />
+
+            <!-- ********** 沿用原先的滑动关节，使整个U形可在 x轴 上移动 ********** -->
+            <joint
+                name="obstacle2:joint"
+                type="slide"
+                axis="1 0 0"
+                limited="true"
+                damping="0.01"
+                range="-.25 .25"
+                margin="0.03"
+            />
+        </body>
+
+<!--        4. 抓取物体-->
+<!--        这是一个可以被抓取的方块对象：-->
+<!--        其初始位置在 (0.025, 0.025, 0.025).-->
+<!--        joint type="free"：允许在 3D 中任意平移旋转(6 自由度)。-->
+<!--        geom size="0.025 0.025 0.025" type="box"：一个立方体边长 0.05m。-->
+<!--        condim="3"：碰撞维度(可根据需要指定 1~6)，这里大概率表示仅在某些方向上有碰撞约束或者力/摩擦等。-->
+<!--        mass="2"：2 kg。-->
+<!--        site name="object0"：加了一个红色小球可视化在中心。-->
+        <body name="object0" pos="0.025 0.025 0.025">
+            <joint name="object0:joint" type="free" damping="0.01"></joint>
+            <geom size="0.025 0.025 0.025" type="box" condim="3" name="object0" material="block_mat" mass="2"></geom>
+            <site name="object0" pos="0 0 0" size="0.02 0.02 0.02" rgba="1 0 0 1" type="sphere"></site>
+        </body>
+
+<!--        5. 光源-->
+<!--        声明了一个方向光（directional="true"），位置在 (0,0,4)，方向 (0,0,-1) 即从上往下照。-->
+<!--        ambient, diffuse, specular 分别指定环境光、漫反射、镜面反射的强度。-->
+<!--        castshadow="false"：不启用阴影投射。-->
+        <light directional="true" ambient="0.2 0.2 0.2" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3" castshadow="false"
+               pos="0 0 4" dir="0 0 -1" name="light0"></light>
+    </worldbody>
+</mujoco>

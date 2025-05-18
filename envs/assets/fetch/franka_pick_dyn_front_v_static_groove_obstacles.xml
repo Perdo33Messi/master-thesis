@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--【先 V, 静态 V 形槽】 .xml-->
+
+<mujoco>
+    <compiler angle="radian" coordinate="local" meshdir="" texturedir="../textures"></compiler>
+    <option timestep="0.002">
+        <flag warmstart="enable"></flag>
+    </option>
+
+    <size nuser_actuator="5"/>
+
+    <include file="franka_shared.xml"></include>
+
+
+    <worldbody>
+        <geom name="floor0" size="0 0 0.05" type="plane" material="groundplane"/>
+        <body name="floor0" pos="0.8 0.75 0">
+            <site name="target0" pos="0 0 0.5" size="0.02 0.02 0.02" rgba="1 0 0 1" type="sphere"></site>
+        </body>
+        <body name="external_camera_1" pos="3.5 0.75 1.6">
+            <camera euler="0 1.1 1.57" fovy="43.3" name="ex_camera_1" pos="0 0 0"></camera>
+        </body>
+        <body name="external_camera_2" pos="2.5 0.75 0.6">
+            <camera euler="0 1.57 1.57" fovy="43.3" name="ex_camera_2" pos="0 0 0"></camera>
+        </body>
+
+        <body name="panda_table" pos="0.5 0.75 0.22">
+            <geom size="0.4 0.35 0.22" pos="0.05 0 0" type="box" mass="3000" material="table_mat"/>
+            <body name="panda_base" pos="0.3 0 0.22">
+                <include file="franka_robot.xml"></include>
+            </body>
+        </body>
+        <body mocap="true" name="panda0:mocap" pos="0 0 0" euler="3.14159 1.5708 0">
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.7" size="0.005 0.005 0.005" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="1 0.005 0.005" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 1 0.001" type="box"></geom>
+            <geom conaffinity="0" contype="0" pos="0 0 0" rgba="0 0.5 0 0.1" size="0.005 0.005 1" type="box"></geom>
+        </body>
+
+        <body pos="1.3 0.75 0.2" name="table0">
+            <geom size="0.25 0.55 0.2" type="box" mass="2000" material="table_mat"></geom>
+            <site name="target_center" pos="0 -0.38 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_center" pos="0 0.39 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_1" pos="-1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_2" pos="-1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_3" pos="-0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_4" pos="0 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="mark1" pos="0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark2" pos="1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark3" pos="1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark4" pos="-1.875 -0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark5" pos="0 0.25 0.2" size="0.04 0.04 0.04" rgba="1 0 1 0.1" type="sphere"></site>
+            <site name="safe2:site" pos="0 0.25 0.2" size="0.15 0.078 0.035" rgba="1 0 0 0" type="box"></site>
+        </body>
+
+        <!--
+        <body pos="1.3 0.75 0.2" name="table0">
+            <geom size="0.25 0.35 0.2" type="box" mass="2000" material="table_mat"></geom>
+            <site name="target_center" pos="0 -0.28 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_center" pos="0 0.25 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0" type="sphere"></site>
+            <site name="init_1" pos="-1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_2" pos="-1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_3" pos="-0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="init_4" pos="0 0.45 0.2" size="0.02 0.02 0.02" rgba="0 1 0 0.1" type="sphere"></site>
+            <site name="mark1" pos="0.625 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark2" pos="1.25 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark3" pos="1.875 0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark4" pos="-1.875 -0.45 0.2" size="0.02 0.02 0.02" rgba="0 0 1 0.1" type="sphere"></site>
+            <site name="mark5" pos="0 0.25 0.2" size="0.04 0.04 0.04" rgba="1 0 1 0.1" type="sphere"></site>
+            <site name="safe2:site" pos="0 0.25 0.2" size="0.15 0.078 0.035" rgba="1 0 0 0" type="box"></site>
+        </body>
+        -->
+
+        <body pos="1.3 0.75 0.6" name="space0">
+            <site name="spacesite" size="0.25 0.55 0.2" rgba="0 0 1 0.05" type="box"></site>
+        </body>
+
+        <body pos="1.3 0.60 0.435" name="obstacle:site">
+            <site name="obstacle:site" size="0.25 0.03 0.035" rgba="1 0 0 0.05" type="box"></site>
+        </body>
+
+<!--        <body pos="1.3 0.80 0.435" name="obstacle2:site">-->
+<!--            <site name="obstacle2:site" size="0.25 0.03 0.035" rgba="1 0 0 0.05" type="box"></site>-->
+<!--        </body>-->
+
+        <body pos="1.3 0.80 0.435" name="obstacle2:site">
+            <site name="obstacle2:site" size="0.25 0.09 0.035" rgba="1 0 0 0.05" type="box"></site>
+        </body>
+
+        <body pos="1.3 0.80 0.435" name="safe2:body">
+
+        </body>
+
+        <!-- the blue one-->
+        <body pos="1.3 0.60 0.435" name="obstacle">
+            <!--limited="true" range="-.05 .05"  damping='0.01' armature='0' frictionloss='0.1'-->
+            <geom name="obstacle:geom" pos="0 0 0" size="0.03 0.03 0.03" type="box" rgba="0 0 1 1" mass="2000"
+                  material="table_mat"></geom>
+            <joint name="obstacle:joint" type="slide" axis="1 0 0" limited="true" damping="0.01" range="-.25 .25"
+                   margin="0.03"></joint>
+        </body>
+
+<!--        <body pos="1.3 0.80 0.435" name="obstacle2">-->
+<!--            &lt;!&ndash;limited="true" range="-.05 .05"  damping='0.01' armature='0' frictionloss='0.1'&ndash;&gt;-->
+<!--            <geom name="obstacle2:geom" pos="0 0 0" size="0.12 0.03 0.03" type="box" rgba="0 1 1 1" mass="2000"-->
+<!--                  material="table_mat"></geom>-->
+<!--            <joint name="obstacle2:joint" type="slide" axis="1 0 0" limited="true" damping="0.01" range="-.25 .25"-->
+<!--                   margin="0.03"></joint>-->
+<!--        </body>-->
+
+
+
+        <!-- ************* 新的 V 形槽障碍物 ************* -->
+        <body pos="1.3 0.80 0.435" name="obstacle2">
+            <!-- ********** 为了让V形开口朝向init_center，大致面对+Y方向 ********** -->
+
+            <!-- 左侧斜板：绕Z轴约135°(2.35619 rad)，略向负X偏移 -->
+            <!-- 靠近机械臂的那一个-->
+            <!-- euler="0 0 2.35619"  表示 绕自身的 z 轴 旋转 135° ，右手坐标系，逆时针旋转，-->
+            <!-- 旋转的起点是 x 轴的正方向，是远离机械臂的方向是 x 轴的正方向 -->
+            <!-- MuJoCo 文档原话（在 euler 属性处）通常描述为：
+            “The transformations corresponding to pos and euler are combined in this order:
+            rotate around x,
+            then around y,
+            then around z,
+            then translate.
+            The Euler angles are defined as extrinsic rotations...”
+            ——也就是“先 X，再 Y，再 Z”的外旋序列。-->
+
+            <geom
+                name="obstacle2:geom_v1"
+                type="box"
+                pos="-0.06 0 0"
+                euler="0 0 2.35619"
+                size="0.10 0.03 0.03"
+                rgba="0 1 1 1"
+                mass="1000"
+                material="table_mat"
+            />
+
+            <!-- 右侧斜板：绕Z轴约45°(0.7854 rad)，略向正X偏移 -->
+<!--            <geom-->
+<!--                name="obstacle2:geom_v2"-->
+<!--                type="box"-->
+<!--                pos="0.04 0 0"-->
+<!--                euler="0 0 0.785398"-->
+<!--                size="0.06 0.03 0.03"-->
+<!--                rgba="0 1 1 1"-->
+<!--                mass="1000"-->
+<!--                material="table_mat"-->
+<!--            />-->
+
+            <geom
+                name="obstacle2:geom_v2"
+                type="box"
+                pos="0.06 0 0"
+                euler="0 0 0.785398"
+                size="0.10 0.03 0.03"
+                rgba="0 1 1 1"
+                mass="1000"
+                material="table_mat"
+            />
+            <!-- 沿用原先的滑动关节，使整个V形可在x轴上前后移动 -->
+            <joint
+                name="obstacle2:joint"
+                type="slide"
+                axis="1 0 0"
+                limited="true"
+                damping="0.01"
+                range="-.25 .25"
+                margin="0.03"
+            />
+        </body>
+
+        <body name="object0" pos="0.025 0.025 0.025">
+            <joint name="object0:joint" type="free" damping="0.01"></joint>
+            <geom size="0.025 0.025 0.025" type="box" condim="3" name="object0" material="block_mat" mass="2"></geom>
+            <site name="object0" pos="0 0 0" size="0.02 0.02 0.02" rgba="1 0 0 1" type="sphere"></site>
+        </body>
+
+        <light directional="true" ambient="0.2 0.2 0.2" diffuse="0.8 0.8 0.8" specular="0.3 0.3 0.3" castshadow="false"
+               pos="0 0 4" dir="0 0 -1" name="light0"></light>
+    </worldbody>
+</mujoco>
