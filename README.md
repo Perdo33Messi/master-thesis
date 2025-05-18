@@ -1,4 +1,4 @@
-# Collision Free Robot Navigation in Dynamic Environments with Reinforcement Learning and Model Predictive Path Integral Control
+# Robotic Arm Navigation and Obstacle Avoidance Based on Deep Reinforcement Learning and Enhanced Model Predictive Path Integral Control
 
 ## Description
 
