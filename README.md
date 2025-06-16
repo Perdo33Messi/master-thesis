@@ -171,6 +171,9 @@ HGG-Enhanced MPPI has shown promising results in simulation. Future work may exp
 Researchers and developers interested in RL and robot control are welcome to contribute. Feel free to reach out or open an issue / pull request 🤝
 
 
+## Note:
+Due to the limited availability of Franka Emika Panda robotic arms in our lab, priority has recently been given to PhD students and postdocs. Despite applying three times, I was ultimately unable to secure a time slot. As a result, I was not able to conduct sim-to-real experiments on the real hardware for my thesis. The "real" part of the code still contains Patrick's implementation, which is the original HGG-MPPI code for real-robot experiments, kept here for reference.
+
 <!-- ## 📜 License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
